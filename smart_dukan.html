@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Dukan — AI Powered Shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-deep: #04342C;
+    --green-dark: #085041;
+    --green-mid: #0F6E56;
+    --green-main: #1D9E75;
+    --green-light: #5DCAA5;
+    --green-pale: #9FE1CB;
+    --green-bg: #E1F5EE;
+    --amber: #EF9F27;
+    --amber-light: #FAC775;
+    --cream: #FAF7F2;
+    --white: #ffffff;
+    --text-dark: #0A1A14;
+    --text-mid: #2D5045;
+    --text-muted: #5A7A6E;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 4rem;
+    background: rgba(250,247,242,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(29,158,117,0.12);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; font-weight: 900;
+    color: var(--green-deep);
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--green-main); }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    text-decoration: none; font-size: 0.9rem; font-weight: 500;
+    color: var(--text-mid); transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--green-main); }
+  .nav-cta {
+    background: var(--green-main); color: white;
+    padding: 0.6rem 1.5rem; border-radius: 50px;
+    font-size: 0.85rem; font-weight: 600; text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .nav-cta:hover { background: var(--green-dark); transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 8rem 4rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 80% 40%, rgba(29,158,117,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 20% 70%, rgba(239,159,39,0.08) 0%, transparent 50%);
+  }
+  .hero-grid-dots {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(29,158,117,0.15) 1px, transparent 1px);
+    background-size: 36px 36px;
+    mask-image: radial-gradient(ellipse 70% 70% at 80% 40%, black 30%, transparent 70%);
+  }
+  .hero-content { position: relative; max-width: 650px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--green-bg); border: 1px solid var(--green-light);
+    color: var(--green-dark); font-size: 0.78rem; font-weight: 600;
+    padding: 0.4rem 1rem; border-radius: 50px; margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+  .badge-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green-main);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; transform: scale(1); }
+    50% { opacity:0.5; transform: scale(1.3); }
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 6vw, 5rem);
+    font-weight: 900; line-height: 1.05;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero h1 em {
+    font-style: normal; color: var(--green-main);
+    position: relative;
+  }
+  .hero h1 em::after {
+    content: '';
+    position: absolute; bottom: 2px; left: 0; right: 0;
+    height: 3px; background: var(--amber);
+    border-radius: 2px;
+  }
+  .hero p {
+    font-size: 1.1rem; color: var(--text-muted);
+    line-height: 1.7; max-width: 500px;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-actions {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .btn-primary {
+    background: var(--green-deep); color: white;
+    padding: 0.85rem 2rem; border-radius: 50px;
+    font-size: 0.95rem; font-weight: 600; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.25s;
+    box-shadow: 0 4px 20px rgba(4,52,44,0.25);
+  }
+  .btn-primary:hover { background: var(--green-main); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(29,158,117,0.35); }
+  .btn-secondary {
+    background: transparent; color: var(--green-deep);
+    padding: 0.85rem 2rem; border-radius: 50px;
+    font-size: 0.95rem; font-weight: 600; text-decoration: none;
+    border: 1.5px solid rgba(4,52,44,0.2);
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.25s;
+  }
+  .btn-secondary:hover { border-color: var(--green-main); color: var(--green-main); }
+
+  .hero-visual {
+    position: absolute; right: 4rem; top: 50%; transform: translateY(-50%);
+    width: 420px;
+    animation: fadeLeft 0.8s 0.4s ease both;
+  }
+  .shop-card {
+    background: white;
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(4,52,44,0.12), 0 4px 16px rgba(4,52,44,0.06);
+    position: relative;
+  }
+  .shop-card-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem;
+  }
+  .shop-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--green-bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+  }
+  .shop-name { font-weight: 700; font-size: 0.95rem; color: var(--text-dark); }
+  .shop-sub { font-size: 0.75rem; color: var(--text-muted); }
+  .online-dot {
+    margin-left: auto; display: flex; align-items: center; gap: 5px;
+    font-size: 0.75rem; color: var(--green-main); font-weight: 500;
+  }
+  .online-dot::before {
+    content: ''; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green-main); display: block;
+    animation: pulse 2s infinite;
+  }
+  .chat-bubble {
+    border-radius: 16px; padding: 0.7rem 1rem;
+    font-size: 0.82rem; line-height: 1.5;
+    margin-bottom: 0.6rem; max-width: 85%;
+  }
+  .chat-bot {
+    background: var(--green-bg); color: var(--green-deep);
+    border-bottom-left-radius: 4px;
+  }
+  .chat-user {
+    background: var(--green-main); color: white;
+    border-bottom-right-radius: 4px;
+    margin-left: auto;
+  }
+  .chat-typing {
+    background: var(--green-bg); padding: 0.7rem 1rem;
+    border-radius: 16px; border-bottom-left-radius: 4px;
+    display: inline-flex; gap: 4px; align-items: center;
+  }
+  .typing-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green-main);
+    animation: typingBounce 1.2s infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingBounce {
+    0%,80%,100% { transform: translateY(0); }
+    40% { transform: translateY(-5px); }
+  }
+  .floating-badge {
+    position: absolute;
+    background: white; border-radius: 12px;
+    padding: 0.6rem 0.9rem;
+    box-shadow: 0 8px 24px rgba(4,52,44,0.12);
+    font-size: 0.75rem; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+    animation: float 3s ease-in-out infinite;
+  }
+  .fb-1 { top: -20px; right: 20px; color: var(--green-dark); }
+  .fb-2 { bottom: -15px; left: -10px; color: var(--amber); }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .fb-icon { font-size: 1rem; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeLeft {
+    from { opacity: 0; transform: translate(30px, -50%); }
+    to { opacity: 1; transform: translate(0, -50%); }
+  }
+
+  /* STATS */
+  .stats {
+    background: var(--green-deep);
+    padding: 3rem 4rem;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem; font-weight: 900;
+    color: var(--green-pale); line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.55); font-weight: 400; }
+
+  /* PROBLEMS */
+  .section { padding: 6rem 4rem; }
+  .section-tag {
+    display: inline-block;
+    background: var(--green-bg); color: var(--green-dark);
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;
+    padding: 0.35rem 1rem; border-radius: 50px;
+    text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900; line-height: 1.15;
+    color: var(--text-dark); margin-bottom: 1rem;
+  }
+  .section-sub {
+    font-size: 1rem; color: var(--text-muted);
+    max-width: 520px; line-height: 1.7; margin-bottom: 3rem;
+  }
+  .problems-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;
+  }
+  .problem-card {
+    background: white; border-radius: 20px;
+    padding: 2rem; border: 1px solid rgba(29,158,117,0.1);
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .problem-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--green-main), var(--amber));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .problem-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(4,52,44,0.1); }
+  .problem-card:hover::before { transform: scaleX(1); }
+  .problem-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: var(--green-bg); display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin-bottom: 1rem;
+  }
+  .problem-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem; }
+  .problem-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* FEATURES */
+  .features { background: var(--green-deep); padding: 6rem 4rem; }
+  .features .section-title { color: white; }
+  .features .section-sub { color: rgba(255,255,255,0.5); }
+  .features-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+  }
+  .feature-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px; padding: 2rem;
+    transition: all 0.3s;
+  }
+  .feature-card:hover {
+    background: rgba(255,255,255,0.09);
+    transform: translateY(-4px);
+    border-color: rgba(29,158,117,0.4);
+  }
+  .feature-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem; font-weight: 900;
+    color: rgba(93,202,165,0.2); line-height: 1;
+    margin-bottom: 1rem;
+  }
+  .feature-card h3 { font-size: 1rem; font-weight: 700; color: white; margin-bottom: 0.5rem; }
+  .feature-card p { font-size: 0.85rem; color: rgba(255,255,255,0.45); line-height: 1.6; }
+  .feature-tag {
+    display: inline-block; margin-top: 1rem;
+    background: rgba(29,158,117,0.2); color: var(--green-pale);
+    font-size: 0.72rem; font-weight: 600; padding: 3px 10px;
+    border-radius: 50px;
+  }
+
+  /* HOW IT WORKS */
+  .how { padding: 6rem 4rem; background: var(--cream); }
+  .steps { display: flex; gap: 0; position: relative; margin-top: 3rem; }
+  .steps::before {
+    content: '';
+    position: absolute; top: 28px; left: 28px; right: 28px; height: 2px;
+    background: linear-gradient(90deg, var(--green-main), var(--amber));
+    z-index: 0;
+  }
+  .step {
+    flex: 1; text-align: center; position: relative; z-index: 1;
+    padding: 0 1rem;
+  }
+  .step-circle {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--green-main); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem; font-weight: 900;
+    margin: 0 auto 1.2rem;
+    box-shadow: 0 4px 16px rgba(29,158,117,0.35);
+  }
+  .step h3 { font-size: 0.92rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; }
+  .step p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+  /* TOOLS */
+  .tools { background: white; padding: 5rem 4rem; }
+  .tools-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 1rem; margin-top: 3rem;
+  }
+  .tool-pill {
+    border: 1.5px solid rgba(29,158,117,0.15);
+    border-radius: 16px; padding: 1.5rem 1rem;
+    text-align: center; transition: all 0.25s;
+    cursor: default;
+  }
+  .tool-pill:hover {
+    border-color: var(--green-main);
+    background: var(--green-bg);
+    transform: translateY(-3px);
+  }
+  .tool-emoji { font-size: 1.8rem; margin-bottom: 0.6rem; }
+  .tool-name { font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.3rem; }
+  .tool-desc { font-size: 0.72rem; color: var(--text-muted); }
+  .tool-free {
+    display: inline-block; margin-top: 0.5rem;
+    background: var(--green-bg); color: var(--green-dark);
+    font-size: 0.65rem; font-weight: 700; padding: 2px 8px;
+    border-radius: 50px;
+  }
+
+  /* CTA */
+  .cta-section {
+    padding: 6rem 4rem;
+    background: linear-gradient(135deg, var(--green-deep) 0%, #0a5a42 100%);
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .cta-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 900; color: white; margin-bottom: 1rem;
+    position: relative;
+  }
+  .cta-section p { color: rgba(255,255,255,0.55); font-size: 1rem; margin-bottom: 2.5rem; position: relative; }
+  .cta-actions { display: flex; gap: 1rem; justify-content: center; position: relative; }
+  .btn-cta-main {
+    background: var(--amber); color: var(--green-deep);
+    padding: 0.9rem 2.2rem; border-radius: 50px;
+    font-size: 0.95rem; font-weight: 700; text-decoration: none;
+    transition: all 0.25s;
+    box-shadow: 0 4px 20px rgba(239,159,39,0.4);
+  }
+  .btn-cta-main:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(239,159,39,0.5); }
+  .btn-cta-ghost {
+    background: rgba(255,255,255,0.08); color: white;
+    padding: 0.9rem 2.2rem; border-radius: 50px;
+    font-size: 0.95rem; font-weight: 600; text-decoration: none;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    transition: all 0.25s;
+  }
+  .btn-cta-ghost:hover { background: rgba(255,255,255,0.15); }
+
+  /* FOOTER */
+  footer {
+    background: var(--text-dark); padding: 3rem 4rem;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 900; color: white;
+  }
+  .footer-logo span { color: var(--green-light); }
+  footer p { font-size: 0.82rem; color: rgba(255,255,255,0.35); }
+  .footer-links { display: flex; gap: 1.5rem; }
+  .footer-links a { font-size: 0.82rem; color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--green-light); }
+
+  /* CHATBOT WIDGET */
+  .chat-widget {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
+  }
+  .chat-toggle {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: var(--green-main);
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 20px rgba(29,158,117,0.4);
+    transition: all 0.25s;
+  }
+  .chat-toggle:hover { transform: scale(1.08); background: var(--green-dark); }
+  .chat-window {
+    position: absolute; bottom: 70px; right: 0;
+    width: 320px; background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(4,52,44,0.2);
+    overflow: hidden;
+    display: none;
+    animation: popUp 0.3s ease;
+  }
+  .chat-window.open { display: block; }
+  @keyframes popUp {
+    from { opacity: 0; transform: scale(0.9) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .cw-header {
+    background: var(--green-deep); padding: 1rem 1.2rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .cw-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--green-main);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+  }
+  .cw-name { font-size: 0.9rem; font-weight: 700; color: white; }
+  .cw-status { font-size: 0.72rem; color: var(--green-pale); }
+  .cw-close {
+    margin-left: auto; background: none; border: none;
+    color: rgba(255,255,255,0.5); cursor: pointer; font-size: 1.1rem;
+    padding: 4px;
+  }
+  .cw-messages {
+    padding: 1rem; height: 220px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .cw-msg {
+    border-radius: 14px; padding: 0.6rem 0.85rem;
+    font-size: 0.8rem; line-height: 1.5; max-width: 85%;
+  }
+  .cw-bot { background: var(--green-bg); color: var(--green-deep); border-bottom-left-radius: 4px; }
+  .cw-user { background: var(--green-main); color: white; border-bottom-right-radius: 4px; margin-left: auto; }
+  .cw-input-area {
+    padding: 0.75rem; border-top: 1px solid rgba(29,158,117,0.1);
+    display: flex; gap: 8px;
+  }
+  .cw-input {
+    flex: 1; border: 1px solid rgba(29,158,117,0.2); border-radius: 10px;
+    padding: 0.5rem 0.75rem; font-size: 0.8rem; outline: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .cw-input:focus { border-color: var(--green-main); }
+  .cw-send {
+    background: var(--green-main); color: white; border: none;
+    border-radius: 10px; width: 36px; height: 36px;
+    cursor: pointer; font-size: 0.9rem; transition: background 0.2s;
+  }
+  .cw-send:hover { background: var(--green-dark); }
+
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { flex-direction: column; padding: 6rem 1.5rem 3rem; }
+    .hero-visual { display: none; }
+    .stats { grid-template-columns: repeat(2,1fr); padding: 2.5rem 1.5rem; }
+    .section, .features, .how, .tools, .cta-section { padding: 4rem 1.5rem; }
+    .problems-grid { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr; }
+    .tools-grid { grid-template-columns: repeat(2,1fr); }
+    .steps { flex-direction: column; gap: 2rem; }
+    .steps::before { display: none; }
+    footer { flex-direction: column; gap: 1rem; padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Smart<span>Dukan</span></div>
+  <ul class="nav-links">
+    <li><a href="#problems">Problems</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it Works</a></li>
+    <li><a href="#tools">Tools</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Start Free →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-dots"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <div class="badge-dot"></div>
+      AI-Powered No-Code System
+    </div>
+    <h1>Aapki Dukan<br><em>Smart</em> Banaao</h1>
+    <p>Chatbot, automation aur AI ki madad se apni dukan ka har kaam automatic karo. Koi coding nahi, sirf results.</p>
+    <div class="hero-actions">
+      <a href="#how" class="btn-primary">Shuru Karo → </a>
+      <a href="#features" class="btn-secondary">Features Dekho</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="shop-card">
+      <div class="floating-badge fb-1">
+        <span class="fb-icon">📦</span> Stock Alert!
+      </div>
+      <div class="floating-badge fb-2">
+        <span class="fb-icon">✅</span> Order Saved!
+      </div>
+      <div class="shop-card-header">
+        <div class="shop-avatar">🏪</div>
+        <div>
+          <div class="shop-name">Smart Dukan Bot</div>
+          <div class="shop-sub">Voiceflow + Make.com</div>
+        </div>
+        <div class="online-dot">Online</div>
+      </div>
+      <div class="chat-bubble chat-bot">Assalam o Alaikum! 👋 Main aapki kaise madad kar sakta hoon?</div>
+      <div class="chat-bubble chat-user">Chawal ka stock kitna hai?</div>
+      <div class="chat-bubble chat-bot">Abhi 45kg available hai. Order karna chahenge? 🛍️</div>
+      <div class="chat-typing">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item">
+    <div class="stat-num">100%</div>
+    <div class="stat-label">No Coding Required</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">5</div>
+    <div class="stat-label">Free Tools Used</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">24/7</div>
+    <div class="stat-label">Customer Service</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">Auto</div>
+    <div class="stat-label">Reports & Alerts</div>
+  </div>
+</div>
+
+<!-- PROBLEMS -->
+<section class="section" id="problems">
+  <div class="section-tag">The Problem</div>
+  <h2 class="section-title">Dukan walon ki 4<br>bari muskilaat</h2>
+  <p class="section-sub">Rozana ki yeh problems dukandaaron ka waqt aur paisa barbaad karti hain.</p>
+  <div class="problems-grid">
+    <div class="problem-card">
+      <div class="problem-icon">📦</div>
+      <h3>Stock ka pata nahi chalta</h3>
+      <p>Kaunsa maal khatam ho gaya, reorder kab karna hai — sab manually dekhna padta hai aur galtiyan hoti hain.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">💬</div>
+      <h3>Grahak 24/7 sawaal poochhte hain</h3>
+      <p>Raat ko bhi log price aur availability poochhte hain. Har waqt jawab dena impossible hai.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">📋</div>
+      <h3>Orders manually track karne padte hain</h3>
+      <p>Phone pe order lena, kaghaz pe likhna, phir bhool jaana — customer khafa hota hai.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">📊</div>
+      <h3>Sales report haath se likhni padti hai</h3>
+      <p>Roz ka hisaab karna mushkil aur thaka dene wala kaam hai jo automation se second mein ho sakta hai.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-tag" style="background: rgba(255,255,255,0.1); color: var(--green-pale);">Features</div>
+  <h2 class="section-title">Smart Dukan kya karta hai?</h2>
+  <p class="section-sub">Ek complete no-code system jo aapki dukan ko fully automatic bana deta hai.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-num">01</div>
+      <h3>AI Chatbot — 24/7 Customer Service</h3>
+      <p>Voiceflow pe bana chatbot grahak ke har sawaal ka jawab deta hai, orders leta hai aur complaints handle karta hai.</p>
+      <span class="feature-tag">Voiceflow</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">02</div>
+      <h3>Auto Order Booking</h3>
+      <p>Chatbot se order aata hai, Make.com Google Sheet mein save karta hai aur dukandaar ko instant notification aati hai.</p>
+      <span class="feature-tag">Make.com</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">03</div>
+      <h3>Low Stock Alert</h3>
+      <p>Jab koi item khatam hone wali ho, Make.com automatically email ya WhatsApp pe alert bhejta hai.</p>
+      <span class="feature-tag">Automation</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">04</div>
+      <h3>Daily Sales Report</h3>
+      <p>Har raat automatically pura din ka report Gmail pe aata hai — manually kuch karna nahi padta.</p>
+      <span class="feature-tag">Google Sheets</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">05</div>
+      <h3>Complaint Tracking</h3>
+      <p>Customer ki shikayat chatbot record karta hai aur owner ko 24 ghante ke andar jawab dene ki reminder aati hai.</p>
+      <span class="feature-tag">Auto Notify</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">06</div>
+      <h3>WhatsApp Integration</h3>
+      <p>Order confirm hone pe customer ko WhatsApp pe automatic message jaata hai — professional aur fast.</p>
+      <span class="feature-tag">WhatsApp</span>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="section-tag">How It Works</div>
+  <h2 class="section-title">Sirf 5 steps mein<br>system tayyar</h2>
+  <p class="section-sub">Koi coding nahi. Sirf drag, drop aur connect karo — sab kuch white coding se.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-circle">1</div>
+      <h3>Voiceflow Account</h3>
+      <p>Free account banao aur chatbot flow design karo — drag & drop</p>
+    </div>
+    <div class="step">
+      <div class="step-circle">2</div>
+      <h3>Chatbot Design</h3>
+      <p>Prompts add karo, questions set karo, user ka data capture karo</p>
+    </div>
+    <div class="step">
+      <div class="step-circle">3</div>
+      <h3>Make.com Connect</h3>
+      <p>Webhook URL lao aur Voiceflow ke API block mein paste karo</p>
+    </div>
+    <div class="step">
+      <div class="step-circle">4</div>
+      <h3>Google Sheet Setup</h3>
+      <p>Make.com scenario se data automatically sheet mein save hoga</p>
+    </div>
+    <div class="step">
+      <div class="step-circle">5</div>
+      <h3>Live karo!</h3>
+      <p>Publish karo aur apne customers ko link share karo — done!</p>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section class="tools" id="tools">
+  <div class="section-tag">Tools Used</div>
+  <h2 class="section-title">Sab free tools —<br>koi kharcha nahi</h2>
+  <p class="section-sub">Yeh sab tools bilkul free hain aur beginner ke liye asaan hain.</p>
+  <div class="tools-grid">
+    <div class="tool-pill">
+      <div class="tool-emoji">🤖</div>
+      <div class="tool-name">Voiceflow</div>
+      <div class="tool-desc">Chatbot builder</div>
+      <div class="tool-free">Free</div>
+    </div>
+    <div class="tool-pill">
+      <div class="tool-emoji">⚡</div>
+      <div class="tool-name">Make.com</div>
+      <div class="tool-desc">Automation platform</div>
+      <div class="tool-free">Free</div>
+    </div>
+    <div class="tool-pill">
+      <div class="tool-emoji">📊</div>
+      <div class="tool-name">Google Sheets</div>
+      <div class="tool-desc">Data & orders</div>
+      <div class="tool-free">Free</div>
+    </div>
+    <div class="tool-pill">
+      <div class="tool-emoji">📧</div>
+      <div class="tool-name">Gmail</div>
+      <div class="tool-desc">Alerts & reports</div>
+      <div class="tool-free">Free</div>
+    </div>
+    <div class="tool-pill">
+      <div class="tool-emoji">💬</div>
+      <div class="tool-name">WhatsApp</div>
+      <div class="tool-desc">Customer notify</div>
+      <div class="tool-free">Free</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="cta">
+  <h2>Apni Dukan Aaj Smart Banaao</h2>
+  <p>Koi coding nahi, koi kharcha nahi — sirf 5 steps aur aapka system ready</p>
+  <div class="cta-actions">
+    <a href="#how" class="btn-cta-main">Abhi Shuru Karo ✨</a>
+    <a href="#features" class="btn-cta-ghost">Features Dekho</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Smart<span>Dukan</span></div>
+  <p>No-Code AI System — White Coding Project 2025</p>
+  <div class="footer-links">
+    <a href="#problems">Problems</a>
+    <a href="#features">Features</a>
+    <a href="#how">How It Works</a>
+  </div>
+</footer>
+
+<!-- CHATBOT WIDGET -->
+<div class="chat-widget">
+  <div class="chat-window" id="chatWindow">
+    <div class="cw-header">
+      <div class="cw-avatar">🤖</div>
+      <div>
+        <div class="cw-name">Dukan Assistant</div>
+        <div class="cw-status">● Online — Ready to help</div>
+      </div>
+      <button class="cw-close" onclick="toggleChat()">✕</button>
+    </div>
+    <div class="cw-messages" id="cwMessages">
+      <div class="cw-msg cw-bot">Assalam o Alaikum! 👋 Main Smart Dukan ka AI Assistant hoon. Kaise madad kar sakta hoon?</div>
+    </div>
+    <div class="cw-input-area">
+      <input type="text" class="cw-input" id="cwInput" placeholder="Yahan likhein..." onkeypress="handleKey(event)">
+      <button class="cw-send" onclick="sendMsg()">➤</button>
+    </div>
+  </div>
+  <button class="chat-toggle" onclick="toggleChat()">💬</button>
+</div>
+
+<script>
+  function toggleChat() {
+    const w = document.getElementById('chatWindow');
+    w.classList.toggle('open');
+  }
+
+  const responses = {
+    'stock': 'Abhi chawal 45kg, daal 30kg, aur aata 60kg available hai! Koi specific item chahiye? 📦',
+    'order': 'Bilkul! Apna naam, address aur item batayein — main order note kar leta hoon. ✅',
+    'price': 'Chawal Rs.120/kg, Daal Rs.180/kg, Aata Rs.90/kg hai. Kuch aur jaanna chahte hain? 💰',
+    'complaint': 'Mujhe afsos hai! Aapki shikayat note ho gayi. Hum 24 ghante mein contact karenge. 🙏',
+    'hello': 'Assalam o Alaikum! Kaise madad kar sakta hoon aaj? 😊',
+    'help': 'Main aapko stock check, order booking, prices aur complaints mein madad kar sakta hoon! Kya chahiye?',
+  };
+
+  function sendMsg() {
+    const input = document.getElementById('cwInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+    const box = document.getElementById('cwMessages');
+    box.innerHTML += `<div class="cw-msg cw-user">${msg}</div>`;
+    input.value = '';
+    setTimeout(() => {
+      let reply = 'Shukriya! Koi aur sawaal ho toh zaroor poochhein. 😊';
+      const lower = msg.toLowerCase();
+      for (const [k, v] of Object.entries(responses)) {
+        if (lower.includes(k)) { reply = v; break; }
+      }
+      box.innerHTML += `<div class="cw-msg cw-bot">${reply}</div>`;
+      box.scrollTop = box.scrollHeight;
+    }, 600);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function handleKey(e) { if (e.key === 'Enter') sendMsg(); }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.problem-card, .feature-card, .tool-pill, .step').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
